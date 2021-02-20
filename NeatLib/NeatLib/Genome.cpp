@@ -4,234 +4,333 @@
 #include "ConnectionHistory.hpp"
 #include "extras.hpp"
 
-#include <vector>
-#include <unordered_map>
 #include <string>
 #include <iostream>
 
 namespace NEAT {
-	Genome::Genome(const std::unordered_map<std::string, float>& _settings): settings(_settings), next_node(0), layers(2), bias_node(0) {
-		input_nodes = settings["Genome Inputs"];
-		output_nodes = settings["Genome Outputs"];
-		for (auto& it : Defaults::neat_defaults)
-			if (settings.find(it.first) == settings.end())
-				settings[it.first] = it.second;
-		for (int i = 0; i < input_nodes; i++) {
-			nodes.emplace_back(i, Activation_Functions::linear);
-			nodes[next_node].layer = 0;
-			++next_node;
+	Genome::Genome() : m_settings{}, m_nextNode{ 0 }, m_layers{ 0 }, m_biasNode{ 0 }, m_inputNodes{ 0 },
+		m_outputNodes{ 0 }, m_network{}, m_nodes{}, m_genes{} {}
+
+	Genome::Genome(const std::unordered_map<std::string, float>& _settings):
+		m_settings{ _settings }, m_nextNode{ 0 }, m_layers{ 2 }, m_biasNode{ 0 }, m_network{}, m_genes{} {
+
+		m_inputNodes = (int)m_settings["Genome Inputs"];
+		m_outputNodes = (int)m_settings["Genome Outputs"];
+
+		for (int i = 0; i < m_inputNodes; i++) {
+			m_nodes.emplace_back(i, Activations::linear);
+			m_nodes[m_nextNode].m_layer = 0;
+			++m_nextNode;
 		}
-		for (int i = 0; i < output_nodes; i++) {
-			nodes.emplace_back(i+input_nodes, Activation_Functions::Activation_functions[settings["Output Activation"]]);
-			nodes[next_node].layer = 1;
-			++next_node;
+
+		for (int i = 0; i < m_outputNodes; i++) {
+			m_nodes.emplace_back(i+m_inputNodes, Activations::Activations[(int)m_settings["Output Activation"]]);
+			m_nodes[m_nextNode].m_layer = 1;
+			++m_nextNode;
 		}
-		nodes.emplace_back(next_node, Activation_Functions::linear);
-		bias_node = next_node;
-		++next_node;
+
+		m_nodes.emplace_back(m_nextNode, Activations::linear);
+		m_biasNode = m_nextNode;
+		++m_nextNode;
 	}
 
-	Genome Genome::Clone(const Genome& genome) {
-		Genome newgenome;
-		newgenome.settings = genome.settings;
-		newgenome.input_nodes = genome.input_nodes;
-		newgenome.output_nodes = genome.output_nodes;
-		newgenome.layers = genome.layers;
-		newgenome.next_node = genome.next_node;
-		newgenome.bias_node = genome.bias_node;
-		for (const Node& node : genome.nodes) {
-			newgenome.nodes.push_back(Node::Clone(node));
+	Genome Genome::clone(Genome& _genome) {
+		Genome new_genome;
+		new_genome.m_settings = _genome.m_settings;
+		new_genome.m_inputNodes = _genome.m_inputNodes;
+		new_genome.m_outputNodes = _genome.m_outputNodes;
+		new_genome.m_layers = _genome.m_layers;
+		new_genome.m_nextNode = _genome.m_nextNode;
+		new_genome.m_biasNode = _genome.m_biasNode;
+
+		for (Node& node : _genome.m_nodes) {
+			new_genome.m_nodes.push_back(Node::clone(node));
 		}
-		for (const ConnectionGene& gene : genome.genes) {
-			newgenome.genes.push_back(ConnectionGene::Clone(gene, newgenome.GetNode(gene.fromNode->number), newgenome.GetNode(gene.toNode->number)));
+		for (const ConnectionGene& gene : _genome.m_genes) {
+			new_genome.m_genes.push_back(ConnectionGene::clone(gene));
 		}
-		newgenome.ConnectNodes();
-		return newgenome;
+
+		new_genome.connectNodes();
+		return new_genome;
 	}
 
-	void Genome::ConnectNodes() {
-		for (Node& node : nodes) node.output_connections.clear();
-		for (ConnectionGene& gene : genes) {
-			gene.fromNode->output_connections.push_back(gene);
+	void Genome::connectNodes() {
+		for (int i = 0; i < m_nextNode; i++) {
+			m_nodes[i].m_outputConnections.clear();
+		}
+
+		for (ConnectionGene& gene : m_genes) {
+			std::cout << m_nodes.size() << " " << gene.m_fromNodeNumber << " " << gene.m_toNodeNumber << std::endl;
+			m_nodes[gene.m_fromNodeNumber].m_outputConnections.push_back(gene);
 		}
 	}
 
-	void Genome::GenerateNetwork() {
-		ConnectNodes();
-		network = std::vector<Node*>();
-		for (int i = 0; i < layers; i++) for (Node& node : nodes) if (node.layer == i) network.push_back(&node);
+	void Genome::generateNetwork() {
+		connectNodes();
+
+		m_network = std::vector<int>();
+
+		for (int i = 0; i < m_layers; i++) {
+			for (int j = 0; j < m_nextNode; j++) {
+				if (m_nodes[j].m_layer == i) {
+					m_network.push_back(j);
+				}
+			}
+		}
 	}
 
-	std::vector<float> Genome::FeedForward(std::vector<float>& inputs) {
-		for (int i = 0; i < input_nodes; i++) nodes[i].outputValue = inputs[i];
-		nodes[bias_node].outputValue = 1;
-		for (Node* node : network) node->Engage();
+	std::vector<float> Genome::feedForward(std::vector<float>& _inputs) {
+		for (int i = 0; i < m_inputNodes; i++) {
+			m_nodes[i].m_outputValue = _inputs[i];
+		}
+		m_nodes[m_biasNode].m_outputValue = 1;
+
+		for (int node_number : m_network) {
+			m_nodes[node_number].engage(m_nodes);
+		}
+
 		std::vector<float> output;
-		for (int i = 0; i < output_nodes; i++) output.push_back(nodes[input_nodes + i].outputValue);
-		for (Node& node : nodes) node.inputSum = 0;
+		for (int i = 0; i < m_outputNodes; i++) {
+			output.push_back(m_nodes[m_inputNodes + i].m_outputValue);
+		}
+
+		for (Node& node : m_nodes) {
+			node.m_inputSum = 0;
+		}
 		return output;
 	}
 
-	Node& Genome::GetNode(int node_number) {
-		for (Node& node : nodes) if (node.number == node_number) return node;
-	}
+	int Genome::getInnovationNumber(std::vector<ConnectionHistory>& _innovation_histories,
+		const Node& _from_node, const Node& _to_node) {
+		bool is_new = true;
 
-	int Genome::GetInnovationNumber(std::vector<ConnectionHistory>& innovationHistories, const Node& _fromNode, const Node& _toNode) {
-		bool isNew = true;
-		for (ConnectionHistory& history : innovationHistories) {
-			if (history.Matches(*this, _fromNode, _toNode)) {
-				isNew = false;
-				return history.innovationNumber;
+		for (ConnectionHistory& history : _innovation_histories) {
+			if (history.matches(*this, _from_node, _to_node)) {
+				is_new = false;
+				return history.m_innovationNumber;
 			}
 		}
-		if (isNew) {
-			int connection_innovation_number = settings["_nextConnectionNo"];
+
+		if (is_new) {
+			int connection_innovation_number = (int)m_settings["_nextConnectionNo"];
 			std::vector<int> innovation_numbers;
-			for (ConnectionGene& gene : genes) {
-				innovation_numbers.push_back(gene.innovationNo);
+
+			for (ConnectionGene& gene : m_genes) {
+				innovation_numbers.push_back(gene.m_innovationNo);
 			}
-			innovationHistories.emplace_back(_fromNode.number, _toNode.number,
+
+			_innovation_histories.emplace_back(_from_node.m_number, _to_node.m_number,
 				connection_innovation_number, innovation_numbers);
-			++settings["_nextConnectionNo"];
+
+			++m_settings["_nextConnectionNo"];
 			return connection_innovation_number;
 		}
+		return 0;
 	}
 
-	bool Genome::IsFullyConnected() {
-		int maxConnections = 0;
-		std::vector<int> nodes_in_layer(layers, 0);
-		for (Node& node : nodes) {
-			++nodes_in_layer[node.layer];
+	bool Genome::isFullyConnected() {
+		int max_connections = 0;
+		std::vector<int> nodes_in_layer(m_layers, 0);
+
+		for (Node& node : m_nodes) {
+			++nodes_in_layer[node.m_layer];
 		}
-		for (int i = 0; i < layers - 1; i++) {
+
+		for (int i = 0; i < m_layers - 1; i++) {
 			int nodes_in_front = 0;
-			for (int j = i + 1; j < layers; j++) nodes_in_front += nodes_in_layer[j];
-			maxConnections += nodes_in_layer[i] * nodes_in_front;
+			for (int j = i + 1; j < m_layers; j++) {
+				nodes_in_front += nodes_in_layer[j];
+			}
+			max_connections += nodes_in_layer[i] * nodes_in_front;
 		}
-		if (maxConnections == genes.size()) return true;
+
+		if (max_connections == m_genes.size()) return true;
 		else return false;
 	}
 	
-	bool Genome::RandomConnectionsAreBad(int node1, int node2) {
-		return (nodes[node1].layer == nodes[node2].layer) || nodes[node1].IsConnectedTo(nodes[node2]);
+	bool Genome::randomConnectionsAreBad(int node1, int node2) {
+		return (m_nodes[node1].m_layer == m_nodes[node2].m_layer) || m_nodes[node1].isConnectedTo(m_nodes[node2]);
 	}
 
-	void Genome::AddConnection(std::vector<ConnectionHistory>& innovationHistories) {
-		if (IsFullyConnected()) return;
-		int randomNode1 = (int)std::floorf(Random::random() * nodes.size());
-		int randomNode2 = (int)std::floorf(Random::random() * nodes.size());
-		while (RandomConnectionsAreBad(randomNode1, randomNode2)) {
-			randomNode1 = (int)std::floorf(Random::random() * nodes.size());
-			randomNode2 = (int)std::floorf(Random::random() * nodes.size());
+	void Genome::addConnection(std::vector<ConnectionHistory>& _innovation_histories) {
+		if (isFullyConnected()) return;
+
+		int random_node_1 = (int)std::floorf(Random::Random() * m_nextNode);
+		int random_node_2 = (int)std::floorf(Random::Random() * m_nextNode);
+		while (randomConnectionsAreBad(random_node_1, random_node_2)) {
+			random_node_1 = (int)std::floorf(Random::Random() * m_nextNode);
+			random_node_2 = (int)std::floorf(Random::Random() * m_nextNode);
 		}
-		if (nodes[randomNode1].layer > nodes[randomNode2].layer) std::swap(randomNode1, randomNode2);
-		int ConnectionInnovationNumber = GetInnovationNumber(innovationHistories, nodes[randomNode1], nodes[randomNode2]);
-		genes.emplace_back(nodes[randomNode1], nodes[randomNode2],
-			Random::randomRange(), ConnectionInnovationNumber, settings["Weight Mutation Ratio"]);
-		ConnectNodes();
+
+		if (m_nodes[random_node_1].m_layer > m_nodes[random_node_2].m_layer) {
+			std::swap(random_node_1, random_node_2);
+		}
+
+		int connection_innovation_number = getInnovationNumber(_innovation_histories,
+			m_nodes[random_node_1], m_nodes[random_node_2]);
+
+		m_genes.emplace_back(m_nodes[random_node_1].m_number, random_node_1,
+			m_nodes[random_node_2].m_number, random_node_2, Random::RandomRange(),
+			connection_innovation_number, m_settings["Weight Mutation Ratio"]);
+
+		connectNodes();
 	}
 
-	void Genome::AddNode(std::vector<ConnectionHistory>& innovationHistories) {
-		if (genes.empty()) {
-			AddConnection(innovationHistories);
+	void Genome::addNode(std::vector<ConnectionHistory>& _innovation_histories) {
+		if (m_genes.empty()) {
+			addConnection(_innovation_histories);
 			return;
 		}
-		int rc = (int)std::floorf(Random::random() * genes.size());
-		while (genes[rc].fromNode == &nodes[bias_node] && genes.size() != 1) rc = (int)std::floorf(Random::random() * genes.size());
-		genes[rc].enabled = false;
-		int NewNodeNo = next_node;
-		std::cout << genes[1].fromNode << " " << genes[1].fromNode->number << " " << genes[1].innovationNo << " " <<
-			genes[1].fromNode->output_connections.size() << " " << &nodes[0] << std::endl;
-		nodes.emplace_back(NewNodeNo, Activation_Functions::Activation_functions[settings["Hidden Activation"]]);
-		std::cout << genes[1].fromNode << " " << genes[1].fromNode->number << " " << genes[1].innovationNo << " " <<
-			genes[1].fromNode->output_connections.size() << " " << &nodes[0] << std::endl;
-		++next_node;
-		Node node = GetNode(NewNodeNo);
-		float wmr = settings["Weight Mutation Ratio"];
-		int ConnectionInnovationNumber = GetInnovationNumber(innovationHistories, *genes[rc].fromNode, node);
-		genes.emplace_back(*genes[rc].fromNode, node, 1, ConnectionInnovationNumber, wmr);
 
-		ConnectionInnovationNumber = GetInnovationNumber(innovationHistories, node, *genes[rc].toNode);
-		genes.emplace_back(node, *genes[rc].toNode, genes[rc].weight, ConnectionInnovationNumber, wmr);
-		node.layer = genes[rc].fromNode->layer + 1;
-		
-		ConnectionInnovationNumber = GetInnovationNumber(innovationHistories, nodes[bias_node], node);
-		genes.emplace_back(nodes[bias_node], node, 0, ConnectionInnovationNumber, wmr);
-
-		if (node.layer == genes[rc].toNode->layer) {
-			for (Node& Node : nodes) if (Node.layer >= node.layer && &Node != &node) Node.layer += 1;
-			layers += 1;
+		int random_connection_number = (int)std::floorf(Random::Random() * m_genes.size());
+		while (m_genes[random_connection_number].m_fromNode == m_biasNode && m_genes.size() != 1) {
+			random_connection_number = (int)std::floorf(Random::Random() * m_genes.size());
 		}
-		ConnectNodes();
-	}
+		m_genes[random_connection_number].m_enabled = false;
 
-	void Genome::FullyConnect(std::vector<ConnectionHistory>& innovationHistories) {
-		for (int i = 0; i < (input_nodes + 1) * output_nodes; i++) AddConnection(innovationHistories);
-		ConnectNodes();
-	}
+		int new_node_no = m_nextNode;
+		m_nodes.emplace_back(new_node_no, Activations::Activations[(int)m_settings["Hidden Activation"]]);
+		Node& node = m_nodes[new_node_no];
+		m_nextNode++;
 
-	void Genome::PartialConnect(std::vector<ConnectionHistory>& innovationHistories) {
-		for (int i = 0; i < ((input_nodes + 1) * output_nodes)/2; i++) AddConnection(innovationHistories);
-		ConnectNodes();
-	}
+		float weight_mutation_ratio = m_settings["Weight Mutation Ratio"];
 
-	void Genome::MinimumConnect(std::vector<ConnectionHistory>& innovationHistories) {
-		for (int i = 0; i < 3; i++) AddConnection(innovationHistories);
-		ConnectNodes();
-	}
 
-	void Genome::Mutate(std::vector<ConnectionHistory>& innovationHistories) {
-		if (Random::random() < settings["Weight Mutate Percent"])
-			for (ConnectionGene& gene : genes) {
-				if (Random::random() < settings["Weight Mutation Percent"])
-					gene.MutateWeight();
-				if (Random::random() < settings["Connection Toggle Percent"])
-					gene.enabled = !gene.enabled;
+		int connection_innovation_number = getInnovationNumber(_innovation_histories,
+			m_nodes[m_genes[random_connection_number].m_fromNode], node);
+
+		m_genes.emplace_back(m_genes[random_connection_number].m_fromNode,
+			m_genes[random_connection_number].m_fromNodeNumber, new_node_no, node.m_number,
+			1, connection_innovation_number, weight_mutation_ratio);
+
+
+		connection_innovation_number = getInnovationNumber(_innovation_histories,
+			node, m_nodes[m_genes[random_connection_number].m_toNode]);
+
+		m_genes.emplace_back(new_node_no, node.m_number, m_genes[random_connection_number].m_toNode,
+			m_genes[random_connection_number].m_toNodeNumber, m_genes[random_connection_number].m_weight,
+			connection_innovation_number, weight_mutation_ratio);
+
+		node.m_layer = m_nodes[m_genes[random_connection_number].m_fromNode].m_layer + 1;
+
+
+		connection_innovation_number = getInnovationNumber(_innovation_histories, m_nodes[m_biasNode], node);
+		
+		m_genes.emplace_back(m_biasNode, m_nodes[m_biasNode].m_number, new_node_no, node.m_number, 0,
+			connection_innovation_number, weight_mutation_ratio);
+
+
+		if (node.m_layer == m_nodes[m_genes[random_connection_number].m_toNode].m_layer) {
+			for (Node& current_node : m_nodes) {
+				if (current_node.m_layer >= node.m_layer && current_node.m_number != new_node_no) {
+					current_node.m_layer += 1;
+				}
 			}
-		if (Random::random() < settings["Connection Mutation Percent"])
-			AddConnection(innovationHistories);
-		if (Random::random() < settings["Node Mutation Percent"])
-			AddNode(innovationHistories);
+			m_layers += 1;
+		}
+		connectNodes();
 	}
 
-	Genome Genome::Crossover(Genome& parrent2) {
+	void Genome::fullyConnect(std::vector<ConnectionHistory>& _innovation_histories) {
+		for (int i = 0; i < (m_inputNodes + 1) * m_outputNodes; i++) {
+			addConnection(_innovation_histories);
+		}
+		connectNodes();
+	}
+
+	void Genome::partialConnect(std::vector<ConnectionHistory>& _innovation_histories) {
+		for (int i = 0; i < ((m_inputNodes + 1) * m_outputNodes) / 2; i++) {
+			addConnection(_innovation_histories);
+		}
+		connectNodes();
+	}
+
+	void Genome::minimumConnect(std::vector<ConnectionHistory>& _innovation_histories) {
+		for (int i = 0; i < 3; i++) {
+			addConnection(_innovation_histories);
+		}
+		connectNodes();
+	}
+
+	void Genome::mutate(std::vector<ConnectionHistory>& _innovation_histories) {
+		if (Random::Random() < m_settings["Weight Mutate Percent"]) {
+			for (ConnectionGene& gene : m_genes) {
+				if (Random::Random() < m_settings["Weight Mutation Percent"]) {
+					gene.mutateWeight();
+				}
+				if (Random::Random() < m_settings["Connection Toggle Percent"]) {
+					gene.m_enabled = !gene.m_enabled;
+				}
+			}
+		}
+
+		if (Random::Random() < m_settings["Connection Mutation Percent"]) {
+			addConnection(_innovation_histories);
+		}
+
+		if (Random::Random() < m_settings["Node Mutation Percent"]) {
+			addNode(_innovation_histories);
+		}
+	}
+
+	Genome Genome::crossover(const Genome& _other_parrent) {
+
 		Genome child;
-		child.input_nodes = input_nodes;
-		child.output_nodes = output_nodes;
-		child.settings = settings;
-		child.layers = layers;
-		child.next_node = next_node;
-		child.bias_node = bias_node;
-		std::vector<ConnectionGene> childGene;
-		std::vector<bool> isEnabled;
-		for (int i = 0; i < genes.size(); i++) {
-			bool setEnabled = true;
-			int parrent2Gene = MatchingGene(parrent2, genes[i].innovationNo);
-			if (parrent2Gene != -1) {
-				if (!(genes[i].enabled || parrent2.genes[i].enabled))
-					if (Random::random() < settings["Enable Percent"])
-						setEnabled = false;
-				if (Random::random() < settings["Parent Gene Percent"]) childGene.push_back(genes[i]);
-				else childGene.push_back(parrent2.genes[i]);
+		child.m_inputNodes = m_inputNodes;
+		child.m_outputNodes = m_outputNodes;
+		child.m_settings = m_settings;
+		child.m_layers = m_layers;
+		child.m_nextNode = m_nextNode;
+		child.m_biasNode = m_biasNode;
+
+		std::vector<ConnectionGene> child_gene;
+		std::vector<bool> is_enabled;
+
+		for (size_t i = 0; i < m_genes.size(); i++) {
+			bool set_enabled = true;
+
+			int other_parrent_gene = matchingGene(_other_parrent, m_genes[i].m_innovationNo);
+
+			if (other_parrent_gene != -1) {
+				if (!(m_genes[i].m_enabled || _other_parrent.m_genes[i].m_enabled)) {
+					if (Random::Random() < m_settings["Enable Percent"])
+						set_enabled = false;
+				}
+
+				if (Random::Random() < m_settings["Parent Gene Percent"]) {
+					child_gene.push_back(m_genes[i]);
+				}
+				else {
+					child_gene.push_back(_other_parrent.m_genes[other_parrent_gene]);
+				}
 			}
 			else {
-				childGene.push_back(genes[i]);
-				setEnabled = genes[i].enabled;
+				child_gene.push_back(m_genes[i]);
+				set_enabled = m_genes[i].m_enabled;
 			}
-			isEnabled.push_back(setEnabled);
+
+			is_enabled.push_back(set_enabled);
 		}
-		for (Node& node : nodes) child.nodes.push_back(node);
-		for (int i = 0; i < childGene.size(); i++) {
-			child.genes.push_back(ConnectionGene::Clone(childGene[i],
-				child.GetNode(childGene[i].fromNode->number), child.GetNode(childGene[i].toNode->number)));
-			child.genes[i].enabled = isEnabled[i];
+
+		for (Node& node : m_nodes) {
+			child.m_nodes.push_back(node);
 		}
-		child.ConnectNodes();
+
+		for (size_t i = 0; i < child_gene.size(); i++) {
+			child.m_genes.push_back(ConnectionGene::clone(child_gene[i]));
+			child.m_genes[i].m_enabled = is_enabled[i];
+		}
+
+		child.connectNodes();
 		return child;
 	}
 
-	int Genome::MatchingGene(Genome& parent, int innovationNumber) {
-		for (int i = 0; i < parent.genes.size(); i++) if (parent.genes[i].innovationNo == innovationNumber) return i;
+	int Genome::matchingGene(const Genome& _parent, int _innovation_number) {
+		for (size_t i = 0; i < _parent.m_genes.size(); i++) {
+			if (_parent.m_genes[i].m_innovationNo == _innovation_number) {
+				return i;
+			}
+		}
 		return -1;
 	}
 }

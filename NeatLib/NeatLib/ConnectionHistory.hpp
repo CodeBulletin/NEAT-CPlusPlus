@@ -5,12 +5,12 @@ namespace NEAT {
 	struct Genome;
 	struct Node;
 	struct ConnectionHistory {
-		int fromNode, toNode, innovationNumber;
-		std::vector<int> innovationNumbers;
+		int m_fromNode, m_toNode, m_innovationNumber;
+		std::vector<int> m_innovationNumbers;
 
-		ConnectionHistory() = default;
+		ConnectionHistory();
 		ConnectionHistory(int, int, int, std::vector<int>&);
 
-		bool Matches(Genome&, const Node&, const Node&);
+		bool matches(Genome&, const Node&, const Node&);
 	};
 }

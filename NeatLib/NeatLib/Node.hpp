@@ -5,19 +5,19 @@ namespace NEAT {
 	struct ConnectionGene;
 
 	struct Node {
-		int number;
-		int layer;
-		float inputSum;
-		float outputValue;
-		float (*activation) (const float&);
-		std::vector<ConnectionGene> output_connections = std::vector<ConnectionGene>();
+		int m_number;
+		int m_layer;
+		float m_inputSum;
+		float m_outputValue;
+		float (*m_activation) (const float&);
+		std::vector<ConnectionGene> m_outputConnections = std::vector<ConnectionGene>();
 
-		Node() = default;
+		Node();
 		Node(int ino, float (*func)(const float&));
 
-		static Node Clone(const Node&);
+		static Node clone(const Node&);
 
-		bool IsConnectedTo(const Node& other);
-		void Engage();
+		bool isConnectedTo(const Node& other);
+		void engage(std::vector<Node>&);
 	};
 }

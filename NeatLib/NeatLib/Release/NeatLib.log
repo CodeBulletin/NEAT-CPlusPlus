@@ -1,10 +1,7 @@
-﻿  ConnectionGene.cpp
-  main.cpp
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\main.cpp(14,58): warning C4305: 'argument': truncation from 'double' to 'float'
-  node.cpp
+﻿  Player.cpp
   Generating code
-  0 of 131 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
+  28 of 901 functions ( 3.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+    41 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   NeatLib.vcxproj -> C:\Users\bmalh\Desktop\Projects\C++\NeatLib\Release\NeatLib.exe

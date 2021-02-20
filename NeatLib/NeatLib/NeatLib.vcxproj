@@ -141,10 +141,10 @@
   <ItemGroup>
     <ClCompile Include="ConnectionGene.cpp" />
     <ClCompile Include="ConnectionHistory.cpp" />
-    <ClCompile Include="extras.cpp" />
+    <ClCompile Include="Extras.cpp" />
     <ClCompile Include="Genome.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="node.cpp" />
+    <ClCompile Include="Node.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ConnectionGene.hpp" />
@@ -152,6 +152,9 @@
     <ClInclude Include="extras.hpp" />
     <ClInclude Include="Genome.hpp" />
     <ClInclude Include="Node.hpp" />
+    <ClInclude Include="Player.hpp" />
+    <ClInclude Include="Population.hpp" />
+    <ClInclude Include="Species.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

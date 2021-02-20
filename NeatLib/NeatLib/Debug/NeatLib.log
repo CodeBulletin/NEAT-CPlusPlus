@@ -1,24 +1,16 @@
 ﻿  Genome.cpp
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\Genome.cpp(14,41): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\Genome.cpp(15,43): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\Genome.cpp(25,109): warning C4244: 'argument': conversion from 'float' to 'const int', possible loss of data
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\Genome.cpp(88,37): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\Genome.cpp(145,104): warning C4244: 'argument': conversion from 'float' to 'const int', possible loss of data
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\Genome.cpp(207,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\Genome.cpp(224,21): warning C4018: '<': signed/unsigned mismatch
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\Genome.cpp(234,21): warning C4018: '<': signed/unsigned mismatch
 C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\utility(152,1): warning C4244: 'initializing': conversion from 'const int' to '_Ty2', possible loss of data
           with
           [
               _Ty2=float
           ]
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\extras.hpp(69): message : see reference to function template instantiation 'std::pair<const std::string,float>::pair<const char(&)[18],const int&,0>(_Other1,_Other2) noexcept(false)' being compiled
+C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\extras.hpp(67): message : see reference to function template instantiation 'std::pair<const std::string,float>::pair<const char(&)[18],const int&,0>(_Other1,_Other2) noexcept(false)' being compiled
           with
           [
               _Other1=const char (&)[18],
               _Other2=const int &
           ]
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\extras.hpp(47): message : see reference to function template instantiation 'std::pair<const std::string,float>::pair<const char(&)[18],const int&,0>(_Other1,_Other2) noexcept(false)' being compiled
+C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\extras.hpp(45): message : see reference to function template instantiation 'std::pair<const std::string,float>::pair<const char(&)[18],const int&,0>(_Other1,_Other2) noexcept(false)' being compiled
           with
           [
               _Other1=const char (&)[18],
@@ -33,13 +25,13 @@ C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.2
           [
               _Ty2=float
           ]
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\extras.hpp(69): message : see reference to function template instantiation 'std::pair<const std::string,float>::pair<const char(&)[14],int,0>(_Other1,_Other2 &&) noexcept(false)' being compiled
+C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\extras.hpp(67): message : see reference to function template instantiation 'std::pair<const std::string,float>::pair<const char(&)[14],int,0>(_Other1,_Other2 &&) noexcept(false)' being compiled
           with
           [
               _Other1=const char (&)[14],
               _Other2=int
           ]
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\extras.hpp(47): message : see reference to function template instantiation 'std::pair<const std::string,float>::pair<const char(&)[14],int,0>(_Other1,_Other2 &&) noexcept(false)' being compiled
+C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\extras.hpp(45): message : see reference to function template instantiation 'std::pair<const std::string,float>::pair<const char(&)[14],int,0>(_Other1,_Other2 &&) noexcept(false)' being compiled
           with
           [
               _Other1=const char (&)[14],
@@ -54,13 +46,13 @@ C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.2
           [
               _Ty2=float
           ]
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\extras.hpp(69): message : see reference to function template instantiation 'std::pair<const std::string,float>::pair<const char(&)[22],double,0>(_Other1,_Other2 &&) noexcept(false)' being compiled
+C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\extras.hpp(67): message : see reference to function template instantiation 'std::pair<const std::string,float>::pair<const char(&)[22],double,0>(_Other1,_Other2 &&) noexcept(false)' being compiled
           with
           [
               _Other1=const char (&)[22],
               _Other2=double
           ]
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\extras.hpp(47): message : see reference to function template instantiation 'std::pair<const std::string,float>::pair<const char(&)[22],double,0>(_Other1,_Other2 &&) noexcept(false)' being compiled
+C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\extras.hpp(45): message : see reference to function template instantiation 'std::pair<const std::string,float>::pair<const char(&)[22],double,0>(_Other1,_Other2 &&) noexcept(false)' being compiled
           with
           [
               _Other1=const char (&)[22],
@@ -71,26 +63,24 @@ C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.2
           [
               _Ty=int
           ]
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(682): message : see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,NEAT::Node&,NEAT::Node&,int,int&,float&>(_Alloc &,_Objty *const ,NEAT::Node &,NEAT::Node &,int &&,int &,float &)' being compiled
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(682): message : see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,int&,int&,int&,int&,int,int&,float&>(_Alloc &,_Objty *const ,int &,int &,int &,int &,int &&,int &,float &)' being compiled
           with
           [
               _Alloc=std::allocator<NEAT::ConnectionGene>,
               _Ty=NEAT::ConnectionGene,
               _Objty=NEAT::ConnectionGene
           ]
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(687): message : see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,NEAT::Node&,NEAT::Node&,int,int&,float&>(_Alloc &,_Objty *const ,NEAT::Node &,NEAT::Node &,int &&,int &,float &)' being compiled
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(687): message : see reference to function template instantiation 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,int&,int&,int&,int&,int,int&,float&>(_Alloc &,_Objty *const ,int &,int &,int &,int &,int &&,int &,float &)' being compiled
           with
           [
               _Alloc=std::allocator<NEAT::ConnectionGene>,
               _Ty=NEAT::ConnectionGene,
               _Objty=NEAT::ConnectionGene
           ]
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(700): message : see reference to function template instantiation 'void std::vector<NEAT::ConnectionGene,std::allocator<NEAT::ConnectionGene>>::_Emplace_back_with_unused_capacity<_Ty&,_Ty&,int,int&,float&>(_Ty &,_Ty &,int &&,int &,float &)' being compiled
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.26.28801\include\vector(700): message : see reference to function template instantiation 'void std::vector<NEAT::ConnectionGene,std::allocator<NEAT::ConnectionGene>>::_Emplace_back_with_unused_capacity<int&,int&,int&,int&,_Ty,int&,float&>(int &,int &,int &,int &,_Ty &&,int &,float &)' being compiled
           with
           [
-              _Ty=NEAT::Node
+              _Ty=int
           ]
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\Genome.cpp(152): message : see reference to function template instantiation 'void std::vector<NEAT::ConnectionGene,std::allocator<NEAT::ConnectionGene>>::emplace_back<NEAT::Node&,NEAT::Node&,int,int&,float&>(NEAT::Node &,NEAT::Node &,int &&,int &,float &)' being compiled
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\Genome.cpp(77): warning C4715: 'NEAT::Genome::GetNode': not all control paths return a value
-C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\Genome.cpp(98): warning C4715: 'NEAT::Genome::GetInnovationNumber': not all control paths return a value
+C:\Users\bmalh\Desktop\Projects\C++\NeatLib\NeatLib\Genome.cpp(204): message : see reference to function template instantiation 'void std::vector<NEAT::ConnectionGene,std::allocator<NEAT::ConnectionGene>>::emplace_back<int&,int&,int&,int&,int,int&,float&>(int &,int &,int &,int &,int &&,int &,float &)' being compiled
   NeatLib.vcxproj -> C:\Users\bmalh\Desktop\Projects\C++\NeatLib\Debug\NeatLib.exe

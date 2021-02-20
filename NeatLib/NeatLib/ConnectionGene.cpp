@@ -4,22 +4,29 @@
 #include <vector>
 
 namespace NEAT {
-	ConnectionGene::ConnectionGene(Node& _fromNode, Node& _toNode, float Weight, int ino, float wmr) :
-		fromNode(&_fromNode), toNode(&_toNode), weight(Weight), innovationNo(ino), weight_mutation_ratio(wmr), enabled(true) {}
+	ConnectionGene::ConnectionGene() : m_fromNode{ 0 }, m_fromNodeNumber{ 0 }, m_toNode{0},m_toNodeNumber{ 0 },
+		m_weight{ 0.0f }, m_innovationNo{ 0 }, m_weightMutationRatio{ 0 }, m_enabled{ true } {}
 
-	ConnectionGene ConnectionGene::Clone(const ConnectionGene& gene, Node& fromNode, Node& toNode) {
-		return ConnectionGene(fromNode, toNode, gene.weight, gene.innovationNo, gene.weight_mutation_ratio);
+	ConnectionGene::ConnectionGene(int _from_node , int _from_node_number, int _to_node, int _to_node_number,
+		float _weight, int _innovation_number, float _weight_mutation_number) :
+		m_fromNode{ _from_node }, m_fromNodeNumber{ _from_node_number }, m_toNode{ _to_node },
+		m_toNodeNumber{ _to_node }, m_weight{ _weight }, m_innovationNo{ _innovation_number },
+		m_weightMutationRatio{ _weight_mutation_number }, m_enabled{ true } {}
+
+	ConnectionGene ConnectionGene::clone(const ConnectionGene& _gene) {
+		return ConnectionGene(_gene.m_fromNode, _gene.m_fromNodeNumber, _gene.m_toNode, _gene.m_toNodeNumber,
+			_gene.m_weight, _gene.m_innovationNo, _gene.m_weightMutationRatio);
 	}
 
-	void ConnectionGene::MutateWeight() {
-		float r = Random::random();
-		if (weight_mutation_ratio < r) {
-			weight = Random::randomRange();
+	void ConnectionGene::mutateWeight() {
+		float r = Random::Random();
+		if (m_weightMutationRatio < r) {
+			m_weight = Random::RandomRange();
 		}
 		else {
-			weight += Random::randomRange() / 50.0f;
-			if (weight >= 1.0f) weight = 1;
-			if (weight <= -1.0f) weight = -1;
+			m_weight += Random::RandomRange() / 50.0f;
+			if (m_weight >= 1.0f) m_weight = 1;
+			if (m_weight <= -1.0f) m_weight = -1;
 		}
 	}
 }

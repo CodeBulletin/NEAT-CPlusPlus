@@ -7,35 +7,34 @@ namespace NEAT {
 	struct ConnectionHistory;
 	struct ConnectionGene;
 	struct Genome {
-		int input_nodes, output_nodes;
-		std::vector<Node> nodes;
-		std::vector<Node*> network;
-		std::vector<ConnectionGene> genes;
-		std::unordered_map<std::string, float> settings;
-		int next_node, layers, bias_node;
+		int m_inputNodes, m_outputNodes;
+		std::vector<Node> m_nodes;
+		std::vector<int> m_network;
+		std::vector<ConnectionGene> m_genes;
+		std::unordered_map<std::string, float> m_settings;
+		int m_nextNode, m_layers, m_biasNode;
 
-		Genome() = default;
+		Genome();
 		Genome(const std::unordered_map<std::string, float>&);
 
-		static Genome Clone(const Genome&);
+		static Genome clone(Genome&);
 
-		void ConnectNodes();
-		void GenerateNetwork();
-		std::vector<float> FeedForward(std::vector<float>&);
+		void connectNodes();
+		void generateNetwork();
+		std::vector<float> feedForward(std::vector<float>&);
 
-		Node& GetNode(int);
-		int GetInnovationNumber(std::vector<ConnectionHistory>&, const Node&, const Node&);
-		bool IsFullyConnected();
-		bool RandomConnectionsAreBad(int, int);
-		void AddConnection(std::vector<ConnectionHistory>&);
-		void AddNode(std::vector<ConnectionHistory>&);
-		void FullyConnect(std::vector<ConnectionHistory>&);
-		void PartialConnect(std::vector<ConnectionHistory>&);
-		void MinimumConnect(std::vector<ConnectionHistory>&);
-		void Mutate(std::vector<ConnectionHistory>&);
+		int getInnovationNumber(std::vector<ConnectionHistory>&, const Node&, const Node&);
+		bool isFullyConnected();
+		bool randomConnectionsAreBad(int, int);
+		void addConnection(std::vector<ConnectionHistory>&);
+		void addNode(std::vector<ConnectionHistory>&);
+		void fullyConnect(std::vector<ConnectionHistory>&);
+		void partialConnect(std::vector<ConnectionHistory>&);
+		void minimumConnect(std::vector<ConnectionHistory>&);
+		void mutate(std::vector<ConnectionHistory>&);
 		
-		Genome Crossover(Genome&);
+		Genome crossover(const Genome&);
 
-		static int MatchingGene(Genome&, int);
+		static int matchingGene(const Genome&, int);
 	};
 }

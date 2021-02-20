@@ -3,16 +3,17 @@
 namespace NEAT {
 	struct Node;
 	struct ConnectionGene {
-		Node *toNode, *fromNode;
-		bool enabled;
-		float weight, weight_mutation_ratio;
-		int innovationNo;
+		int m_fromNode, m_fromNodeNumber;
+		int m_toNode, m_toNodeNumber;
+		bool m_enabled;
+		float m_weight, m_weightMutationRatio;
+		int m_innovationNo;
 
-		ConnectionGene() = default;
-		ConnectionGene(Node&, Node&, float, int, float);
+		ConnectionGene();
+		ConnectionGene(int, int, int, int, float, int, float);
 
-		static ConnectionGene Clone(const ConnectionGene&, Node&, Node&);
+		static ConnectionGene clone(const ConnectionGene&);
 
-		void MutateWeight();
+		void mutateWeight();
 	};
 }
